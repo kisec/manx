@@ -24,20 +24,17 @@ func (contact UDP) Listen(port string, server string, inbound int, profile map[s
 	profile["tag"] = "beacon"
 	go callMeBack(inbound)
 
-	for {
-	   conn, err := net.Dial("udp", port)
-	   if err == nil {
-			beacon(conn, profile)
+   conn, err := net.Dial("udp", port)
+   if err == nil {
+		beacon(conn, profile)
 
-			if err = conn.Close(); err != nil {
-				output.VerbosePrint(fmt.Sprintf("[-] %s", err))
-			}
-		} else {
+		if err = conn.Close(); err != nil {
 			output.VerbosePrint(fmt.Sprintf("[-] %s", err))
 		}
-
-		time.Sleep(60 * time.Second)
+	} else {
+		output.VerbosePrint(fmt.Sprintf("[-] %s", err))
 	}
+
 }
 
 func callMeBack(port int) {

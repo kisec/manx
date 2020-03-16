@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 )
 
 var (
@@ -56,5 +57,8 @@ func main() {
 	output.VerbosePrint(fmt.Sprintf("[*] %s outbound socket %s, inbound at %d", *contact, *socket, *inbound))
 
 	coms, _ := sockets.CommunicationChannels[*contact]
-	coms.Listen(*socket, *http, *inbound, profile)
+	for {
+		coms.Listen(*socket, *http, *inbound, profile)
+		time.Sleep(60 * time.Second)
+	}
 }

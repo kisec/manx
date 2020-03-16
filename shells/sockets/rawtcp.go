@@ -2,12 +2,11 @@ package sockets
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"net"
-	"time"
-	"strings"
 	"os"
-	"encoding/json"
+	"strings"
 
 	"../commands"
 	"../output"
@@ -22,7 +21,6 @@ func init() {
 
 //Listen through a new socket connection
 func (contact TCP) Listen(port string, server string, inbound int, profile map[string]interface{}) {
-	for {
 	   conn, err := net.Dial("tcp", port)
 	   if err != nil {
 		  output.VerbosePrint(fmt.Sprintf("[-] %s", err))
@@ -31,8 +29,6 @@ func (contact TCP) Listen(port string, server string, inbound int, profile map[s
 		   output.VerbosePrint(fmt.Sprintf("[+] TCP established for %s", profile["paw"]))
 		   listen(conn, profile, server)
 	   }
-	   time.Sleep(60 * time.Second)
-	}
  }
 
 func listen(conn net.Conn, profile map[string]interface{}, server string) {
