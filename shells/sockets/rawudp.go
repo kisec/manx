@@ -18,7 +18,7 @@ func init() {
 }
 
 //Listen through a new socket connection
-func (contact UDP) Listen(port string, server string, inbound int, profile map[string]interface{}) {
+func (contact UDP) Listen(port string, server string, inbound int, profile map[string]interface{}) string{
 	profile["paw"]= buildPaw()
 	profile["callback"] = inbound
 	profile["tag"] = "beacon"
@@ -34,7 +34,7 @@ func (contact UDP) Listen(port string, server string, inbound int, profile map[s
 	} else {
 		output.VerbosePrint(fmt.Sprintf("[-] %s", err))
 	}
-
+	return ""
 }
 
 func callMeBack(port int) {
