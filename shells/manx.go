@@ -41,6 +41,15 @@ func buildProfile(socket string, executors []string) map[string]interface{} {
 	return profile
 }
 
+func updateSocket(c2 string, socket string) string {
+	if c2 == "tcp" {
+		socket = (socket)[:8] + "7010"
+	} else {
+		socket = (socket)[:8] + "7011"
+	}
+	return socket
+}
+
 func main() {
 	var executors util.ListFlags
 	contact := flag.String("contact", "tcp", "Which contact to use")
@@ -61,6 +70,7 @@ func main() {
 		c2 := coms.Listen(*socket, *http, *inbound, profile)
 		if _, ok := sockets.CommunicationChannels[c2]; ok {
 			coms, _ = sockets.CommunicationChannels[c2]
+			*socket = updateSocket(c2, *socket)
 		}
 		time.Sleep(60 * time.Second)
 	}
